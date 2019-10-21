@@ -1,0 +1,58 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+}
+
+#my-form > div.form-input-block {
+  margin: 20px auto;
+  width: 50%;
+}
+
+label {
+  display: block;
+  padding-bottom: 10px;
+}
+
+input, textarea {
+  border-radius: 0;
+  padding: 7px 10px;
+  border: solid transparent;
+  border-width: 0 2px;
+  outline: none;
+  background: #f4f4f4;
+  width: 100%;
+}
+
+textarea {
+  resize: none;
+  height: 10rem;
+  font-size: 1.2rem;
+  line-height: 1.3;
+}
+
+input:hover, textarea:hover, input:focus, textarea:focus {
+  border-left-color: #366b9b;
+}
+
+input:focus, textarea:focus {
+  border-left-width: 4px;
+  padding-left: 8px;
+}
+
+input:invalid, textarea:invalid {
+  border-right-color: #9b2f2b;
+}
+
+input[type=submit] {
+  height: 40px;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-image: url("https://image.flaticon.com/icons/svg/942/942196.svg");
+  background-color: #f4f4f4;
+  background-position-x: 5px;
+  background-position-y: 5px;
+  background-size: 30px;
+}

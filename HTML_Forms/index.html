@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Form</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+<h1>Form</h1>
+<form action="http://demo.stools.net" method="post" id="my-form">
+  <div class="form-input-block">
+    <label for="username">Username</label>
+    <input name="username" id="username" type="text" required>
+  </div>
+  <div class="form-input-block">
+    <label for="email">Email</label>
+    <input name="email" id="email" type="email">
+  </div>
+  <div class="form-input-block">
+    <label for="age">Age</label>
+    <input name="age" id="age" type="number" min="0">
+  </div>
+  <div class="form-input-block">
+    <label for="comment">Comment</label>
+    <textarea name="comment" id="comment" required></textarea>
+  </div>
+  <div class="form-input-block">
+    <input type="submit">
+  </div>
+  <div class="form-input-block">
+    <label for="publish">Publication mode</label>
+    <select name="publish" id="publish">
+      <option value="public">Public</option>
+      <option value="private" selected>private</option>
+    </select>
+  </div>
+</form>
+</body>
+</html>
