@@ -34,7 +34,7 @@ function recodex_run(&$argv) {
 		$result = $proc->getAllTasks();
 	}
 	catch (Exception $e) {
-		echo "Exception\n";	// some expections may be expected
+		echo "Exception\n";	// some exceptions may be expected
 		exit(0);
 	}
 
