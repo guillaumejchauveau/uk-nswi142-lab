@@ -1,11 +1,3 @@
-/*
- * You may use the following initial position if you do not implement randomization.
- *  3  11   2   5
- *  1  13   6   8
- *  4   9      10
- * 14  12   7  15
- */
-
 class Tile {
   _el
   _pos_x
@@ -66,40 +58,10 @@ class Game {
     if (this._tiles.length !== width * height - 1) {
       throw new Error('Invalid board')
     }
-    /*
-        this._tiles[0].setPos(0, 1)
-        this._tiles[1].setPos(2, 0)
-        this._tiles[2].setPos(0, 0)
-        this._tiles[3].setPos(0, 2)
-        this._tiles[4].setPos(3, 0)
-        this._tiles[5].setPos(2, 1)
-        this._tiles[6].setPos(2, 3)
-        this._tiles[7].setPos(3, 1)
-        this._tiles[8].setPos(1, 2)
-        this._tiles[9].setPos(3, 2)
-        this._tiles[10].setPos(1, 0)
-        this._tiles[11].setPos(1, 3)
-        this._tiles[12].setPos(1, 1)
-        this._tiles[13].setPos(0, 3)
-        this._tiles[14].setPos(3, 3)
-        this._empty_tile_x = 2
-        this._empty_tile_y = 2*/
 
-    this._tiles[0].setPos(0, 0)
-    this._tiles[1].setPos(1, 0)
-    this._tiles[2].setPos(2, 0)
-    this._tiles[3].setPos(3, 0)
-    this._tiles[4].setPos(0, 1)
-    this._tiles[5].setPos(1, 1)
-    this._tiles[6].setPos(2, 1)
-    this._tiles[7].setPos(3, 1)
-    this._tiles[8].setPos(0, 2)
-    this._tiles[9].setPos(1, 2)
-    this._tiles[10].setPos(2, 2)
-    this._tiles[11].setPos(3, 2)
-    this._tiles[12].setPos(0, 3)
-    this._tiles[13].setPos(1, 3)
-    this._tiles[14].setPos(2, 3)
+    for (let i = 0; i < 15; i++) {
+      this._tiles[i].setPos(i % width, Math.floor(i / width))
+    }
     this._empty_tile_x = 3
     this._empty_tile_y = 3
 
