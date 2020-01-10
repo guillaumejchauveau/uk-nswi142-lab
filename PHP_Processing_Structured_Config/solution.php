@@ -178,7 +178,8 @@ class ConfigPreprocessor
         }
     }
 
-    private function absoluteDepends(Task $child, Task $other) {
+    private function absoluteDepends(Task $child, Task $other)
+    {
         $others = [$other];
 
         while (!empty($others)) {
@@ -198,30 +199,39 @@ class ConfigPreprocessor
      */
     public function getAllTasks(): array
     {
-        /*uasort(
-          $this->tasks,
-          function (Task $a, Task $b): int {
-              if ($a->getComputedPriority() > $b->getComputedPriority()) {
-                  return -1;
-              }
-              if ($b->getComputedPriority() > $a->getComputedPriority()) {
-                  return 1;
-              }
-              return 0;
-          }
-        );*/
-        uasort(
-          $this->tasks,
-          function (Task $a, Task $b): int {
-              if ($this->absoluteDepends($a, $b)) {
-                  return 1;
-              }
-              if ($this->absoluteDepends($b, $a)) {
-                  return -1;
-              }
-              return 0;
-          }
+        $taskList = array_values($this->tasks);
+        for ($i = 0; $i < sizeof($this->tasks); $i++) {
+            $currentTask = $taskList[$i];
+            array_splice($taskList, $i, 1);
+            for ($j = $i - 1; $j >= 0; $j--) {
+                //echo $currentTask->getId() . " " . $taskList[$j]->getId() . "\n";
+                if (array_search($currentTask, $taskList[$j]->children) === true ||
+                  $currentTask->getComputedPriority() < $taskList[$j]->getComputedPriority()/* ||
+                $currentTask->order < $taskList[$j]->order*/) {
+                    break;
+                }
+            }
+            $j++;
+            //echo $currentTask->getId() . " ->  " . $taskList[$j]->getId() . "\n";
+            array_splice($taskList, $j, 0, [$currentTask]);
+        }
+        /*
+                while (
+                  $insertPosition > 0 &&
+                  array_search($currentTask, $taskList[$insertPosition - 1]->children) === false &&
+                  $currentTask->getComputedPriority() >= $taskList[$insertPosition - 1]->getComputedPriority() &&
+                  $currentTaskPosition < $this->tasksPosition[$taskList[$insertPosition - 1]->getId()]
+                ) {
+                    $insertPosition--;
+                }
+
+                array_splice($taskList, $insertPosition, 0, [$currentTask]);*/
+
+        return array_map(
+          function (Task $task) {
+              return $task->getOriginalStructure();
+          },
+          $taskList
         );
-        return $this->tasks;
     }
 }
