@@ -1,0 +1,45 @@
+html {
+  position: relative;
+  min-height: 100%;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+body {
+  margin: 0;
+  font-family: sans-serif;
+  padding: 10px;
+}
+
+.my-table {
+  position: relative;
+  border-collapse: collapse;
+}
+
+thead {
+  border-bottom: 2px solid rgba(0, 0, 0, .1);
+}
+
+th {
+  text-align: left;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, .08);
+}
+
+td {
+  padding: 10px;
+  border-top: 1px solid rgba(0, 0, 0, .1);
+}
+
+#very-special {
+  float: left;
+  margin: 10px;
+}
+
+a:hover {
+  color: pink;
+}
+
+nav a + a {
+  margin-left: 5px;
+}

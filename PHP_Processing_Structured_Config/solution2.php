@@ -140,11 +140,6 @@ class ConfigPreprocessor
      * @var Task[]
      */
     protected $tasks;
-    /**
-     * Roots of the tasks dependency tree.
-     * @var Task[]
-     */
-    protected $tasksTrees = [];
 
     /**
      * Crawls the configuration tree to find tasks.
@@ -177,11 +172,7 @@ class ConfigPreprocessor
     public function __construct($config)
     {
         $this->tasks = $this->extractTasks($config);
-        // Constructs the tasks dependency tree.
         foreach ($this->tasks as $id => $task) {
-            if (empty($task->getDependencyIds())) {
-                $this->tasksTrees[] = $task;
-            }
             foreach ($task->getDependencyIds() as $parentId) {
                 if (!isset($this->tasks[$parentId])) {
                     throw new InvalidArgumentException(
@@ -193,87 +184,43 @@ class ConfigPreprocessor
         }
     }
 
+    private function absoluteDepends(Task $child, Task $other)
+    {
+        $others = [$other];
+
+        while (!empty($others)) {
+            $a = array_pop($others);
+            if (in_array($child->getId(), $a->getDependencyIds())) {
+                return true;
+            }
+            foreach ($a->getDependencyIds() as $dependencyId) {
+                $others[] = $this->tasks[$dependencyId];
+            }
+        }
+        return false;
+    }
+
     /**
      * Get an array of tasks from the config in the right order.
      */
     public function getAllTasks(): array
     {
-        if (empty($this->tasksTrees)) {
-            throw new InvalidArgumentException("Invalid dependency tree");
-        }
-        // Final list of tasks in the right order.
-        /** @var Task[] $taskList */
-        $taskList = [];
-
-        // Number of remaining dependencies for each task.
-        /** @var int[] $taskDependencyCount */
-        $taskDependencyCount = [];
-
-        // Computes the number of remaining dependencies for each task.
-        foreach ($this->tasks as $task) {
-            $taskDependencyCount[$task->getId()] = count($task->getDependencyIds());
-        }
-
-        // List of task queues for each priority. Used to determine the next
-        // task to insert.
-        /** @var Task[][] $priorityQueues */
-        $priorityQueues = [];
-        // List of tasks going to be placed in the priority queues.
-        /** @var Task[] $children */
-        $children = $this->tasksTrees;
-
-        $taskCount = 0;
-        while (true) {
-            // Places the tasks in the priority queues.
-            foreach ($children as $child) {
-                $computedPriority = $child->getComputedPriority();
-                if (!isset($priorityQueues[$computedPriority])) {
-                    $priorityQueues[$computedPriority] = [];
-                    // Sorts the queues so that the highest priority comes
-                    // first.
-                    krsort($priorityQueues);
-                }
-                $priorityQueues[$computedPriority][] = $child;
-            }
-
-            // Finds the highest non-empty priority queue.
-            $emptyQueue = true;
-            foreach ($priorityQueues as &$priorityQueue) {
-                if (!empty($priorityQueue)) {
-                    $emptyQueue = false;
+        $taskList = array_values($this->tasks);
+        for ($i = sizeof($this->tasks) - 1; $i >= 0; $i--) {
+            /** @var Task $currentTask */
+            $currentTask = array_splice($taskList, $i, 1)[0];
+            for ($j = $i - 1; $j >= 0; $j--) {
+                if ($this->absoluteDepends($currentTask, $taskList[$j]) ||
+                  $currentTask->getComputedPriority() < $taskList[$j]->getComputedPriority() ||
+                  $currentTask->order < $taskList[$j]->order) {
+                    $j++;
                     break;
                 }
             }
-            if ($emptyQueue) {
-                break;
-            }
-
-            $currentTask = array_shift($priorityQueue);
-            // Updates the insert position to respect the third rule.
-            $insertPosition = $taskCount;
-            while (
-              $insertPosition > 0 &&
-              array_search($currentTask, $taskList[$insertPosition - 1]->children) === false &&
-              $currentTask->getComputedPriority(
-              ) >= $taskList[$insertPosition - 1]->getComputedPriority() &&
-              $currentTask->order < $taskList[$insertPosition - 1]->order
-            ) {
-                $insertPosition--;
-            }
-
-            array_splice($taskList, $insertPosition, 0, [$currentTask]);
-            $taskCount++;
-
-            // Indicates in the children that a dependency has been inserted.
-            // Prepares the children with no remaining dependencies to be
-            // queued.
-            $children = [];
-            foreach ($currentTask->children as $child) {
-                $taskDependencyCount[$child->getId()]--;
-                if ($taskDependencyCount[$child->getId()] == 0) {
-                    $children[] = $child;
-                }
-            }
+            array_splice($taskList, $j, 0, [$currentTask]);
+            /*if ($i === $j) {
+                $i++;
+            }*/
         }
 
         return array_map(
