@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="author" content="Guillaume Chauveau">
+
+  <link rel="stylesheet" href="style.css">
+
+  <title>Culture numérique - Présentation HTML / CSS</title>
+</head>
+
+<body>
+<div id="container" class="c-container">
+  <main class="c-main">
+    <article>
+      <header class="c-header">
+        <h1 class="c-header__title">Présentation HTML / CSS</h1>
+        <a class="c-header__link" href="./index.html">Retour</a>
+      </header>
+      <section>
+        <h2>Introduction</h2>
+        <p>HTML et CSS sont deux langages informatiques utilisés par les technologies du Web. L'HTML
+          ou HyperText Markup Language va décrire la structure d'un document et ses relations avec
+          d'autres documents (HTML mais aussi des images, vidéos...) à l'aide de balises. Le CSS
+          pour Cascading Style Sheet va quant à lui décrire des règles d'affichage pour un document
+          HTML, comme la taille du texte ou sa couleur pour ne citer qu'elles.</p>
+        <p>Les balises vont former des blocs emboités les uns dans les autres qui contiennent le
+          contenu du document, permettant une structuration hiérarchisée des éléments.</p>
+        <img src="dom_tree.gif" alt="dom_tree">
+      </section>
+      <section>
+        <h2>Les balises</h2>
+        <p>Il existe différents types de balises : tout d'abord des balises structurantes comme
+          <code>header</code>
+          (en-tête), <code>footer</code> (pied de page), <code>p</code> (paragraphe)... Il existe
+          aussi la balise <code>img</code> pour insérer une image, <code>audio</code> pour du son ou
+          encore <code>a</code> pour créer un hyperlien.</p>
+        <p>Ces balises fonctionnent soit par pairs (balise ouvrante et balise fermante) comme <code>header</code>
+          : <code>&lt;header&gt;&lt;/header&gt;</code>, soit toutes seules, comme par exemple <code>img</code>
+          : <code>&lt;img&gt;</code>.</p>
+        <p>Il est aussi possible de créer des listes avec <code>ul</code> et des balises enfantes
+          <code>li</code>: </p>
+        <ul>
+          <li>Un élément de la liste</li>
+          <li>Un deuxième élément</li>
+          <li>
+            <ul>
+              <li>Une sous-liste</li>
+            </ul>
+          </li>
+        </ul>
+        <p>Une autre balise notable est <code>table</code> qui permet de créer des tableaux :</p>
+        <table id="my-table">
+          <thead>
+          <tr>
+            <th>largeur</th>
+            <th>hauteur</th>
+            <th>surface</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>1</td>
+            <td rowspan="2">1</td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>2</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>2</td>
+            <td>4</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>5</td>
+            <td>20</td>
+          </tr>
+          </tbody>
+        </table>
+      </section>
+      <section>
+        <h2>La mise en forme</h2>
+        <p>Pour mettre en forme le document ainsi créé, l'utilisation de CSS devient primordiale.
+          Pour chaque élément HTML, CSS nous offre la possibilité de modifier des propriétés. Ces
+          propriétés sont très variées, elles concernent la taille et le positionnement des blocs,
+          la couleur de fond, l'affichage du texte... elles permettent de modifier quasiment tout le
+          comportement du navigateur quand celui-ci va afficher le document.</p>
+        <p>Pour cibler l'élément sur lequel on veut appliquer des propriétés, on utilise un
+          sélecteur CSS. Un sélecteur CSS est un ensemble de critères qui permet au navigateur de
+          trouver les éléments correspondants. On peut par exemple modifier la couleur de tous les
+          liens avec le code CSS suivant :</p>
+        <p>
+          <code>
+            a {
+            color: red;
+            }
+          </code>
+        </p>
+        <p>On sélectionne tous les éléments <code>a</code> et on leur modifie la propriété
+          <code>color</code> qui controle la couleur du texte.</p>
+      </section>
+    </article>
+  </main>
+  <footer class="c-footer">
+    <p>21706226 - CHAUVEAU Guillaume - L1 Informatique 2017-2018</p>
+    <nav class="c-nav">
+      <a href="index.html">Accueil</a>
+      <a href="html_css.html">Présentation HTML / CSS</a>
+      <a href="monde_numerique.html">Le monde numérique</a>
+      <a href="traitement_image.html">Le traitement des images au service de l'Art Numérique</a>
+      <a href="imagerie_medicale.html">Traitement d'images dans la recherche contre le cancer</a>
+    </nav>
+  </footer>
+</div>
+</body>
+</html>

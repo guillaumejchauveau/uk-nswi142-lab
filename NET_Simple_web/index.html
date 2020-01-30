@@ -1,22 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
   <meta name="author" content="Guillaume Chauveau">
-  <link rel="stylesheet" href="index.css">
-  <title>Page 1</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <title>Culture numérique</title>
 </head>
+
 <body>
-<h1>Awesome web-pages</h1>
-<ul>
-  <li><a href="index.html">This page</a></li>
-  <li>
-    <p>Not this page</p>
-    <ul>
-      <li><a href="article.html">An article</a></li>
-      <li><a href="table.html">A table</a></li>
-    </ul>
-  </li>
-</ul>
+<div id="container" class="c-container">
+  <header class="c-header">
+    <h1 class="c-header__title">Culture numérique</h1>
+  </header>
+  <main class="c-main">
+    <div class="c-link-blocks">
+      <a class="c-link-block" href="./html_css.html">
+        <strong class="c-link-block__title">Présentation HTML / CSS</strong>
+        <span class="c-link-block__intro">Cours de présentation des langages HTML et CSS.</span>
+      </a>
+      <a class="c-link-block" href="./monde_numerique.html">
+        <strong class="c-link-block__title">Le monde numérique</strong>
+        <span class="c-link-block__intro">L'impact du numérique dans le monde.</span>
+      </a>
+      <a class="c-link-block" href="./traitement_image.html">
+        <strong class="c-link-block__title">Le traitement des images au service de l'Art
+          Numérique</strong>
+        <span class="c-link-block__intro">Présentation de différents algorithmes de traitement d'image.</span>
+      </a>
+      <a class="c-link-block" href="./imagerie_medicale.html">
+        <strong class="c-link-block__title">Traitement d'images dans la recherche contre le
+          cancer</strong>
+        <span class="c-link-block__intro">Présentation de l'utilisation du traitement d'images dans la recherche de cellules cancereuses.</span>
+      </a>
+    </div>
+  </main>
+  <footer class="c-footer">
+    <p>21706226 - CHAUVEAU Guillaume - L1 Informatique 2017-2018</p>
+    <nav class="c-nav">
+      <a href="index.html">Accueil</a>
+      <a href="html_css.html">Présentation HTML / CSS</a>
+      <a href="monde_numerique.html">Le monde numérique</a>
+      <a href="traitement_image.html">Le traitement des images au service de l'Art Numérique</a>
+      <a href="imagerie_medicale.html">Traitement d'images dans la recherche contre le cancer</a>
+    </nav>
+  </footer>
+</div>
 </body>
 </html>
