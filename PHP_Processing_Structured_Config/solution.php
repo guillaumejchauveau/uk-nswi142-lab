@@ -2,20 +2,46 @@
 
 class Task
 {
-    protected static function isNonEmptyString($data): bool
-    {
-        return is_string($data) && !empty($data);
-    }
+    /**
+     * @var Task[]
+     */
+    public $children = [];
+    /**
+     * @var int
+     */
+    public $order;
+    /**
+     * @var mixed
+     */
+    protected $originalStructure;
+    /**
+     * @var string
+     */
+    protected $id;
+    /**
+     * @var int
+     */
+    protected $basePriority;
+    /**
+     * @var string[]
+     */
+    protected $dependencyIds;
 
-    protected static function isNonEmptyStringArray($data): bool
+    public function __construct($data)
     {
-        return is_array($data) && array_reduce(
-            $data,
-            function ($carry, $item) {
-                return $carry && self::isNonEmptyString($item);
-            },
-            true
-          );
+        if (!Task::isTask($data)) {
+            throw new InvalidArgumentException("Invalid data");
+        }
+        $this->originalStructure = $data;
+        if (is_array($data)) {
+            $this->id = $data['id'];
+            $this->basePriority = $data['priority'];
+            $this->dependencyIds = $data['dependencies'];
+        } else {
+            $this->id = $data->id;
+            $this->basePriority = $data->priority;
+            $this->dependencyIds = $data->dependencies;
+        }
     }
 
     public static function isTask($data): bool
@@ -48,46 +74,20 @@ class Task
         return false;
     }
 
-    /**
-     * @var mixed
-     */
-    protected $originalStructure;
-    /**
-     * @var string
-     */
-    protected $id;
-    /**
-     * @var int
-     */
-    protected $basePriority;
-    /**
-     * @var string[]
-     */
-    protected $dependencyIds;
-    /**
-     * @var Task[]
-     */
-    public $children = [];
-    /**
-     * @var int
-     */
-    public $order;
-
-    public function __construct($data)
+    protected static function isNonEmptyString($data): bool
     {
-        if (!Task::isTask($data)) {
-            throw new InvalidArgumentException("Invalid data");
-        }
-        $this->originalStructure = $data;
-        if (is_array($data)) {
-            $this->id = $data['id'];
-            $this->basePriority = $data['priority'];
-            $this->dependencyIds = $data['dependencies'];
-        } else {
-            $this->id = $data->id;
-            $this->basePriority = $data->priority;
-            $this->dependencyIds = $data->dependencies;
-        }
+        return is_string($data) && !empty($data);
+    }
+
+    protected static function isNonEmptyStringArray($data): bool
+    {
+        return is_array($data) && array_reduce(
+            $data,
+            function ($carry, $item) {
+                return $carry && self::isNonEmptyString($item);
+            },
+            true
+          );
     }
 
     /**
@@ -96,14 +96,6 @@ class Task
     public function getId(): string
     {
         return $this->id;
-    }
-
-    /**
-     * @return int
-     */
-    public function getBasePriority(): int
-    {
-        return $this->basePriority;
     }
 
     public function getComputedPriority(): int
@@ -115,6 +107,14 @@ class Task
             }
         }*/
         return $priority;
+    }
+
+    /**
+     * @return int
+     */
+    public function getBasePriority(): int
+    {
+        return $this->basePriority;
     }
 
     /**
@@ -146,6 +146,25 @@ class ConfigPreprocessor
      */
     protected $tasksTrees = [];
 
+    public function __construct($config)
+    {
+        $this->tasks = $this->extractTasks($config);
+        // Constructs the tasks dependency tree.
+        foreach ($this->tasks as $id => $task) {
+            if (empty($task->getDependencyIds())) {
+                $this->tasksTrees[] = $task;
+            }
+            foreach ($task->getDependencyIds() as $parentId) {
+                if (!isset($this->tasks[$parentId])) {
+                    throw new InvalidArgumentException(
+                      "Invalid dependency '$parentId' for task '$id'"
+                    );
+                }
+                $this->tasks[$parentId]->children[] = $task;
+            }
+        }
+    }
+
     /**
      * Crawls the configuration tree to find tasks.
      * @param $config
@@ -172,25 +191,6 @@ class ConfigPreprocessor
             }
         }
         return $tasks;
-    }
-
-    public function __construct($config)
-    {
-        $this->tasks = $this->extractTasks($config);
-        // Constructs the tasks dependency tree.
-        foreach ($this->tasks as $id => $task) {
-            if (empty($task->getDependencyIds())) {
-                $this->tasksTrees[] = $task;
-            }
-            foreach ($task->getDependencyIds() as $parentId) {
-                if (!isset($this->tasks[$parentId])) {
-                    throw new InvalidArgumentException(
-                      "Invalid dependency '$parentId' for task '$id'"
-                    );
-                }
-                $this->tasks[$parentId]->children[] = $task;
-            }
-        }
     }
 
     /**
@@ -222,7 +222,6 @@ class ConfigPreprocessor
         /** @var Task[] $children */
         $children = $this->tasksTrees;
 
-        $taskCount = 0;
         while (true) {
             // Places the tasks in the priority queues.
             foreach ($children as $child) {
@@ -233,7 +232,14 @@ class ConfigPreprocessor
                     // first.
                     krsort($priorityQueues);
                 }
-                $priorityQueues[$computedPriority][] = $child;
+                $insertPosition = count($priorityQueues[$computedPriority]);
+                while (
+                  $insertPosition > 0 &&
+                  $child->order < $priorityQueues[$computedPriority][$insertPosition - 1]->order
+                ) {
+                    $insertPosition--;
+                }
+                array_splice($priorityQueues[$computedPriority], $insertPosition, 0, [$child]);
             }
 
             // Finds the highest non-empty priority queue.
@@ -249,20 +255,7 @@ class ConfigPreprocessor
             }
 
             $currentTask = array_shift($priorityQueue);
-            // Updates the insert position to respect the third rule.
-            $insertPosition = $taskCount;
-            while (
-              $insertPosition > 0 &&
-              array_search($currentTask, $taskList[$insertPosition - 1]->children) === false &&
-              $currentTask->getComputedPriority(
-              ) >= $taskList[$insertPosition - 1]->getComputedPriority() &&
-              $currentTask->order < $taskList[$insertPosition - 1]->order
-            ) {
-                $insertPosition--;
-            }
-
-            array_splice($taskList, $insertPosition, 0, [$currentTask]);
-            $taskCount++;
+            $taskList[] = $currentTask;
 
             // Indicates in the children that a dependency has been inserted.
             // Prepares the children with no remaining dependencies to be

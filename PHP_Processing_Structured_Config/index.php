@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/solution2.php');
+require_once(__DIR__ . '/solution.php');
 
 function recodex_prepare_data(&$input)
 {
